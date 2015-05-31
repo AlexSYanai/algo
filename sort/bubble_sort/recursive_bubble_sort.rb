@@ -1,4 +1,4 @@
-require 'benchmark'
+# require 'benchmark'
 
 def rec_bubble_sort(to_sort)
   arr_to_sort = to_sort.dup
@@ -14,18 +14,16 @@ def rec_bubble_sort(to_sort)
   swapped == false ? (return arr_to_sort) : rec_bubble_sort(arr_to_sort)
 end
 
-p rec_bubble_sort([4,3,5,3,1,324,5,4,3,5,3,1,324,5,4,3,5,3,1,324,5,4,3,5,3,1,324,5])
+# p "Rec Benchmark 28:"
+# Benchmark.bm do |x|
+#   x.report {
+#     rec_bubble_sort([4,3,5,3,1,324,5,4,3,5,3,1,324,5,4,3,5,3,1,324,5,4,3,5,3,1,324,5])
+#   }
+# end
 
-p "Rec Benchmark 28:"
-Benchmark.bm do |x|
-  x.report {
-    rec_bubble_sort([4,3,5,3,1,324,5,4,3,5,3,1,324,5,4,3,5,3,1,324,5,4,3,5,3,1,324,5])
-  }
-end
-
-p "Rec Benchmark 54:"
-Benchmark.bm do |x|
-  x.report {
-    rec_bubble_sort([4,3,5,3,1,324,5,4,3,5,3,1,324,5,4,3,5,3,1,324,5,4,3,5,3,1,324,5,4,3,5,3,1,324,5,4,3,5,3,1,324,5,4,3,5,3,1,324,5,4,3,5,3,1,324,5])
-  }
-end
+# p "Rec Benchmark 54:"
+# Benchmark.bm do |x|
+#   x.report {
+#     rec_bubble_sort([4,3,5,3,1,324,5,4,3,5,3,1,324,5,4,3,5,3,1,324,5,4,3,5,3,1,324,5,4,3,5,3,1,324,5,4,3,5,3,1,324,5,4,3,5,3,1,324,5,4,3,5,3,1,324,5])
+#   }
+# end

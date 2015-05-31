@@ -1,4 +1,4 @@
-require 'benchmark'
+# require 'benchmark'
 
 def in_place_bitwise_bubble(arr)
   n = arr.size - 1
@@ -19,18 +19,16 @@ def in_place_bitwise_bubble(arr)
   arr
 end
 
-p in_place_bitwise_bubble([4,3,5,3,1,324,5,4,3,5,3,1,324,5,4,3,5,3,1,324,5,4,3,5,3,1,324,5])
+# p "Bitwise Benchmark 28:"
+# Benchmark.bm do |x|
+#   x.report {
+#     in_place_bitwise_bubble([4,3,5,3,1,324,5,4,3,5,3,1,324,5,4,3,5,3,1,324,5,4,3,5,3,1,324,5])
+#   }
+# end
 
-p "Bitwise Benchmark 28:"
-Benchmark.bm do |x|
-  x.report {
-    in_place_bitwise_bubble([4,3,5,3,1,324,5,4,3,5,3,1,324,5,4,3,5,3,1,324,5,4,3,5,3,1,324,5])
-  }
-end
-
-p "Bitwise Benchmark 54:"
-Benchmark.bm do |x|
-  x.report {
-    in_place_bitwise_bubble([4,3,5,3,1,324,5,4,3,5,3,1,324,5,4,3,5,3,1,324,5,4,3,5,3,1,324,5,4,3,5,3,1,324,5,4,3,5,3,1,324,5,4,3,5,3,1,324,5,4,3,5,3,1,324,5])
-  }
-end
+# p "Bitwise Benchmark 54:"
+# Benchmark.bm do |x|
+#   x.report {
+#     in_place_bitwise_bubble([4,3,5,3,1,324,5,4,3,5,3,1,324,5,4,3,5,3,1,324,5,4,3,5,3,1,324,5,4,3,5,3,1,324,5,4,3,5,3,1,324,5,4,3,5,3,1,324,5,4,3,5,3,1,324,5])
+#   }
+# end
