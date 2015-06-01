@@ -30,8 +30,9 @@ class BackPacker
     @utility_matrix = Array.new(items.length) { Array.new(max_weight+1) {0} }
   end
 
-  def get_items(new_items ||= @items) # Generates list for initialized items or add new items
-    items.length == 1 ? ItemFactory.add_single_item(items) : ItemFactory.create_list(items)
+  def get_items(*new_items) # Generates list for initialized items or add new items
+    new_items = @items if new_items.empty?
+    new_items.length == 1 ? ItemFactory.add_single_item(new_items) : ItemFactory.create_list(new_items)
     @item_list = ItemFactory.list
   end
 
