@@ -1,8 +1,8 @@
-# My Ruby implementation of a basic genetic algorithm
-# Based upon:
-# Introduction to Genetic Algorithms Chapter 1
-# Author: Melanie Mitchell
-
+# # My Ruby implementation of a basic genetic algorithm
+# # Based upon:
+# # Introduction to Genetic Algorithms Chapter 1
+# # Author: Melanie Mitchell
+require 'pry'
 module NaturalEnvironment
 	class << self
 		def encapsulate_conditions(args)
@@ -38,11 +38,11 @@ end
 module Nucleus
 	class << self
 		def recombine(x,y)
-			child_1, child_2 = get_region(y,x,(rand(y.genes.length) + 1)), get_region(x,y,(rand(y.genes.length) + 1))
+			child_1, child_2 = get_regions(y,x,(rand(y.genes.length) + 1)), get_regions(x,y,(rand(y.genes.length) + 1))
 			[Chromosome.new(child_1),Chromosome.new(child_2)]
 		end
 
-		def get_region(genome_1,genome_2,locus)
+		def get_regions(genome_1,genome_2,locus)
 			genome_1.genes[0, locus] + genome_2.genes[locus, genome_2.genes.length]
 		end
 	end
@@ -55,24 +55,17 @@ class Chromosome
 	end
 
 	def count
-		genes.length
+		self.genes.length
 	end
-
+ 
 	def w 							# W denotes fitness in population genetics
 		genes.count("1")  # Assuming here that a coding region(bit) w/a value 1  increases fitness
 	end
 
 	def mutate
-		mutated = ""
-		0.upto(genes.length - 1) do |i|
-			allele = genes[i, 1]
-			if rand <= NaturalEnvironment.rate_mute
-				(allele == "0") ? mutated << "1" : mutated << "0"
-			else
-				mutated << allele
-			end
+		self.genes.chars.each_with_index do |allele,i|
+			allele == "0" ? self.genes[i] = "1" : self.genes[i] = "0" if rand <= NaturalEnvironment.rate_mute
 		end
-		self.genes = mutated
 	end
 end
 
@@ -82,7 +75,7 @@ class Population
 		self.chromosomes = []
 	end
 
-	def inspect
+	def inspect_chromosome
 		chromosomes.map(&:genes)
 	end
 
@@ -111,11 +104,11 @@ class Population
 	end
 
 	def select
-		random_selection = rand(w_total)
 		total = 0
-		chromosomes.each_with_index do |chromosome, index|
-			total += chromosome.w
-			(return chromosome) if total > random_selection || index == (chromosomes.count - 1)
+		random_selection = rand(w_total)
+		chromosomes.each_with_index do |xsome, index|
+			total += xsome.w
+			(return xsome) if total > random_selection || index == (chromosomes.count - 1)
 		end
 	end
 end
@@ -134,19 +127,15 @@ class Selection
 	def run_generations
 		NaturalEnvironment.num_gens.times do |generation|
 			offspring = Population.new
+
 			while offspring.count < prev_gen.count
 				parent_1, parent_2 = select_chromosomes				 
-				child_1, child_2 = mutate_chromosomes(parent_1,parent_2)
-				[child_1, child_2].map(&:mutate)
-
-				if NaturalEnvironment.num_pop.even?
-					offspring.chromosomes << child_1 << child_2
-				else
-					offspring.chromosomes << [child_1, child_2].sample
-				end
+				child_1, child_2 = analyze_crossover(parent_1,parent_2)
+				mutate_chromosomes(child_1,child_2)
+				add_offspring(offspring,child_1,child_2)
 			end
 
-			# display_selection(generation,prev_gen.w_average.round(2),prev_gen.w_max)
+			display_selection(generation,prev_gen.w_average.round(2),prev_gen.w_max)
 			@prev_gen = offspring
 		end
 	end
@@ -155,8 +144,16 @@ class Selection
 		[prev_gen,prev_gen].map(&:select)
 	end
 
-	def mutate_chromosomes(fn1,fn2)
+	def analyze_crossover(fn1,fn2)
 		rand <= NaturalEnvironment.crossover ? Nucleus.recombine(fn1,fn2) : [fn1,fn2]
+	end
+
+	def mutate_chromosomes(child_1,child_2)
+		[child_1, child_2].map(&:mutate)
+	end
+
+	def add_offspring(offspring,child_1,child_2)
+		NaturalEnvironment.num_pop.even? ? offspring.chromosomes.push(child_1,child_2) : offspring.chromosomes.push([child_1, child_2].sample)
 	end
 
 	def display_selection(generation,current_w,max_current_w)
@@ -168,23 +165,12 @@ class Selection
 	end
 
 	def display_final_genome
-		prev_gen.inspect.each_with_index { |xsome,i| (i+1) < 10 ? (puts "N#{i+1}:  #{xsome}") : (puts "N#{i+1}: #{xsome}")}
+		prev_gen.inspect_chromosome.each_with_index { |xsome,i| (i+1) < 10 ? (puts "N#{i+1}:  #{xsome}") : (puts "N#{i+1}: #{xsome}") }
 	end
 end
 
-drosophila = Selection.new({n: 24, l: 64, gen: 1000, pc: 0.7, u: 0.001})
+drosophila = Selection.new({n: 32, l: 64, gen: 1000, pc: 0.8, u: 0.004})
 drosophila.new_generation_zero
 drosophila.run_generations
 drosophila.display_stats
 drosophila.display_final_genome
-
-
-
-
-
-
-
-
-
-
-
