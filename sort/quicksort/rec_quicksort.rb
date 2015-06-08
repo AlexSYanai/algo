@@ -3,7 +3,7 @@ def rec_quicksort(ary)
    return ary unless ary.length > 1
    pivot = ary.pop
    split_vals = ary.group_by { |n| n < pivot }
-   quicksort(split_vals[true]) + [pivot] + quicksort(split_vals[false])
+   rec_quicksort(split_vals[true]) + [pivot] + rec_quicksort(split_vals[false])
 end
 
 # p "Rec Quick 28:"
