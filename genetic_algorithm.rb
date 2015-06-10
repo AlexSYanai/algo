@@ -158,7 +158,7 @@ class Selection
 	end
 
 	def display_selection(generation,current_w,max_current_w)
-		puts "Gen #{generation} - Avg: #{current_w} - Max: #{max_current_w}"
+		puts "Gen: #{generation} | Avg: #{current_w} | Max: #{max_current_w}"
 	end
 
 	def display_stats
