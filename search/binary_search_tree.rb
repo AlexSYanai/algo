@@ -1,7 +1,7 @@
 module TreeBuilder
 	class << self
-		def build_tree(tree,array)
-			tree.ary = array.map { |i| insert_node(tree,i) }
+		def build_tree(tree,input_array)
+			tree.nodes = input_array.map { |val| insert_node(tree,val) }
 		end
 
 		def insert_node(tree,value)
@@ -10,11 +10,37 @@ module TreeBuilder
 	end
 end
 
+module TreeSearcher
+	class << self
+		def breadth_first_search(target,root)
+	    queue = [root]
+	    until queue.empty?
+	      current_node = queue.shift
+	      return current_node if current_node.value == target
+	      queue.unshift(current_node.left_child) unless current_node.left_child.nil?
+	      queue.unshift(current_node.right_child) unless current_node.right_child.nil?
+	    end
+	    nil
+	  end
+
+	  def depth_first_search(target,root)
+	    stack = [root]
+	    until stack.empty?
+	      current_node = stack.pop
+	      return current_node if current_node.value == target
+	      stack << current_node.left_child unless current_node.left_child.nil?
+	      stack << current_node.right_child unless current_node.right_child.nil?
+	    end
+	    nil
+	  end
+	end
+end
+
 class Node
-	attr_accessor :left_child, :right_child, :value
+	attr_accessor :left_child,:right_child,:value
 	def initialize(value,left_child=nil,right_child=nil)
-		@value = value
-		@left_child = left_child
+		@value 			 = value
+		@left_child  = left_child
 		@right_child = right_child
 	end
 	
@@ -30,56 +56,33 @@ class Node
 end
 
 class BinaryTree
-	attr_accessor :root,:ary
+	attr_accessor :root,:nodes
 	def initialize(root=nil)
-		@root = Node.new(root)
-		@ary = []
-	end
-
-	def print_whole_tree
-		@ary.each {|i| puts "#{i} value #{i.value unless i.nil?} #{i.left_child.value unless i.left_child.nil?} #{i.right_child.value unless i.right_child.nil?}"}
-	end
-
-	def print_found_node(node)
-		node.nil? ? (puts "Target not found") : (puts "Value: #{node.value unless node.value.nil?} found at: #{node}")
+		@root  = Node.new(root)
+		@nodes = []
 	end
 
 	def breadth_first_search(target)
-		print_found_node(breadth_first(target))
+		print_found_node(TreeSearcher.breadth_first_search(target,root),target)
 	end
 
 	def depth_first_search(target)
-		print_found_node(depth_first(target))
+		print_found_node(TreeSearcher.depth_first_search(target,root),target)
 	end
 
-	def breadth_first(target)
-    queue = [@root]
-    until queue.empty?
-      current_node = queue.shift
-      return current_node if current_node.value == target
-      queue.unshift(current_node.left_child) unless current_node.left_child.nil?
-      queue.unshift(current_node.right_child) unless current_node.right_child.nil?
-    end
-    nil
-  end
+	def print_whole_tree
+		nodes.each { |node| puts "#{node} value #{node.value unless node.nil?} #{node.left_child.value unless node.left_child.nil?} #{node.right_child.value unless node.right_child.nil?}" }
+	end
 
-  def depth_first(target)
-    stack = [@root]
-    until stack.empty?
-      current_node = stack.pop
-      return current_node if current_node.value == target
-      stack << current_node.left_child unless current_node.left_child.nil?
-      stack << current_node.right_child unless current_node.right_child.nil?
-    end
-    nil
-  end
+	def print_found_node(node,target)
+		node.nil? ? (puts "\nValue #{target} not found") : (puts "\nValue #{node.value unless node.value.nil?} found at: #{node}")
+	end
 end
 
-tree_array = [28,22,32,38,21,11,26,36]
-root = tree_array[0]
-btree = BinaryTree.new(root)
-btree_array = TreeBuilder.build_tree(btree,tree_array)
-btree.print_whole_tree
-btree.breadth_first_search(38)
-btree.breadth_first_search(66)
-btree.depth_first_search(32)
+seed_array = (20..40).to_a.shuffle
+binary_tree = BinaryTree.new(seed_array[0])
+binary_tree_array = TreeBuilder.build_tree(binary_tree,seed_array)
+binary_tree.print_whole_tree
+binary_tree.breadth_first_search(38)
+binary_tree.breadth_first_search(66)
+binary_tree.depth_first_search(32)
