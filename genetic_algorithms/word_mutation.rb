@@ -1,11 +1,11 @@
 module Selection
   class << self
-    def random_char(r_chars)
-      r_chars.sample 
+    def random_char(chars)
+      chars.sample 
     end
 
-    def mutate(parent,rate,r_chars)
-      parent.each_char.collect { |char| rand <= rate ? random_char(r_chars) : char }.join
+    def mutate(parent,rate,chars)
+      parent.each_char.collect { |char| rand <= rate ? random_char(chars) : char }.join
     end
 
     def mutation_rate(candidate,target)
@@ -14,6 +14,10 @@ module Selection
 
     def w(candidate,target) # Calculates fitness using the P0 = e^-x Poisson relationship
       Math.exp(candidate.chars.zip(target.chars).inject(0) { |a,b| a + (b[0].ord - b[1].ord).abs }.fdiv(-10))*100
+    end
+
+    def avg_mutation_rate(rates)
+      rates.inject(:+).fdiv(rates.length)
     end
   end
 end
@@ -24,18 +28,21 @@ module GeneticOutput
       starting.length > target_length ? (return starting[0..target_length]) : (return starting + ("-"*(target_length-starting.length)))
     end
 
-    def log(iteration,rate,target,parent,last=nil)
-      last.nil? ? (puts "%4d %.2f %5.1f %s" % [iteration,rate,Selection.w(parent,target),parent]) : (puts "Generation: %4d\nMutation Rate: %.2f\nFitness: %5.1f\n%s" % [iteration,rate,Selection.w(parent,target),parent])
+    def log(iteration,rate,target,fitness,parent,last=nil)
+      last.nil? ? (puts "%4d %.2f %5.1f %s" % [iteration,rate,fitness,parent]) : (puts "\nGeneration: %4d\nAverage Mutation Rate: %.2f\nFitness: %5.1f\n%s" % [iteration,rate,fitness,parent])
     end
   end
 end
 
 class WordMutation
-  attr_accessor :first_gen
+  attr_accessor :first_gen,:last_gen,:current_gen,:rates
   attr_reader   :target,:num_copies,:search_chars
-  def initialize(target)
+  def initialize(target,copies=100)
     @target       = target
-    @num_copies   = 100
+    @num_copies   = copies
+    @rates        = []
+    @last_gen     = ""
+    @current_gen  = 1
     @search_chars = [("A".."Z").to_a,("a".."z").to_a," "].flatten
   end
 
@@ -44,22 +51,25 @@ class WordMutation
   end
 
   def run_mutations
-    prev = ""
-    iteration = 0
     until first_gen == target
-      iteration += 1
-      rate = Selection.mutation_rate(first_gen,target)
-      until prev == first_gen
-        GeneticOutput.log(iteration,rate,target,first_gen)
-        prev = first_gen
-      end
-      copies = [first_gen] + Array.new(num_copies) {Selection.mutate(first_gen, rate, search_chars)}
-      @first_gen = copies.max_by { |c| Selection.w(c,target) }
+      rates << Selection.mutation_rate(first_gen,target)
+      reset_generation(current_gen,rates.last) until last_gen == first_gen
+      @first_gen = Array.new(num_copies) { Selection.mutate(first_gen, rates.last, search_chars) }.push(first_gen).max_by { |n| Selection.w(n,target) }
+      @current_gen += 1
     end
-    GeneticOutput.log(iteration,rate,target,first_gen,"last")
+  end
+
+  def reset_generation(iteration,rate)
+    GeneticOutput.log(iteration,rate,target,Selection.w(first_gen,target),first_gen)
+    @last_gen = first_gen
+  end
+
+  def final_output
+    GeneticOutput.log(current_gen,Selection.avg_mutation_rate(rates),target,Selection.w(first_gen,target),first_gen,"last")
   end
 end
 
-sentence = WordMutation.new("METHINKS IT IS LIKE A WEASEL")
+sentence = WordMutation.new("This is a test phrase")
 sentence.set_parent
 sentence.run_mutations
+sentence.final_output
