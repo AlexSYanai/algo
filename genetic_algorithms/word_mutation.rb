@@ -1,3 +1,4 @@
+require 'pry'
 module Selection
   class << self
     def random_char(chars)
@@ -24,8 +25,8 @@ end
 
 module GeneticOutput
   class << self
-    def edit_sentence(target_length,starting)
-      starting.length > target_length ? (return starting[0..target_length]) : (return starting + ("-"*(target_length-starting.length)))
+    def edit_sentence(target,starting)
+      starting.length > target.length ? (return starting.split("").sample(target.length).join("")) : (return starting + ("-"*(target.length-starting.length)))
     end
 
     def log(iteration,rate,target,fitness,parent,last=nil)
@@ -35,27 +36,27 @@ module GeneticOutput
 end
 
 class WordMutation
-  attr_accessor :first_gen,:last_gen,:current_gen,:rates
+  attr_accessor :first_gen,:last_gen,:gen_count,:rates
   attr_reader   :target,:num_copies,:search_chars
   def initialize(target,copies=100)
     @target       = target
     @num_copies   = copies
     @rates        = []
     @last_gen     = ""
-    @current_gen  = 1
+    @gen_count    = 1
     @search_chars = [("A".."Z").to_a,("a".."z").to_a," "].flatten
   end
 
   def set_parent(starting=nil)
-    starting.nil? ? @first_gen = search_chars.sample(target.length).join("") : @first_gen = GeneticOutput.edit_sentence(target.length,starting)
+    starting.nil? ? @first_gen = search_chars.sample(target.length).join("") : @first_gen = GeneticOutput.edit_sentence(target,starting)
   end
 
   def run_mutations
     until first_gen == target
       rates << Selection.mutation_rate(first_gen,target)
-      reset_generation(current_gen,rates.last) until last_gen == first_gen
-      @first_gen = Array.new(num_copies) { Selection.mutate(first_gen, rates.last, search_chars) }.push(first_gen).max_by { |n| Selection.w(n,target) }
-      @current_gen += 1
+      reset_generation(gen_count,rates.last) until last_gen == first_gen
+      @first_gen = (1..num_copies).map { Selection.mutate(first_gen,rates.last,search_chars) }.push(first_gen).max_by { |n| Selection.w(n,target) }
+      @gen_count += 1
     end
   end
 
@@ -65,7 +66,7 @@ class WordMutation
   end
 
   def final_output
-    GeneticOutput.log(current_gen,Selection.avg_mutation_rate(rates),target,Selection.w(first_gen,target),first_gen,"last")
+    GeneticOutput.log(gen_count,Selection.avg_mutation_rate(rates),target,Selection.w(first_gen,target),first_gen,"last")
   end
 end
 
