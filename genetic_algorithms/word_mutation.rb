@@ -1,4 +1,3 @@
-require 'pry'
 module Selection
   class << self
     def random_char(chars)
