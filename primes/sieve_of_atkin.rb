@@ -1,6 +1,6 @@
 class SieveofAtkin
   attr_accessor :primes, :sieve
-  attr_reader   :limit,  :finish
+  attr_reader   :finish, :limit
   def initialize(limit)
     @limit  = limit
     @finish = Math.sqrt(limit).round
@@ -42,7 +42,7 @@ class SieveofAtkin
   end
 
   def set_primes(x)
-    ((x**2)..(limit+1)).step(x**2).each { |n| @sieve[n] = false }
+    (x**2..limit+1).step(x**2).each { |n| @sieve[n] = false }
   end
 end
 
