@@ -10,16 +10,14 @@ defmodule FibAgent do
  
   defp do_fib(cache, n) do
     if cached = cache[n] do
-      IO.inspect cache
       {cached, cache}
     else
       {val, cache} = do_fib(cache, n - 1)
       result = val + cache[n-2]
-      IO.inspect cache
       {result, Dict.put(cache, n, result)}
     end
   end
 end
 
 {:ok, agent} = FibAgent.start_link()
-IO.puts FibAgent.fib(agent, 20)
+IO.puts FibAgent.fib(agent, 2000)
