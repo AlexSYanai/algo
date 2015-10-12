@@ -20,4 +20,4 @@ defmodule FibAgent do
 end
 
 {:ok, agent} = FibAgent.start_link()
-IO.puts FibAgent.fib(agent, 2000)
+IO.puts FibAgent.fib(agent, 2_000)
