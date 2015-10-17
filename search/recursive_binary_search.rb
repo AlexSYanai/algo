@@ -2,9 +2,9 @@
 
 def rec_bin_search(target,array,low=0,high=array.length-1)
   middle = (high + low) / 2
-	return -1 if low > high
-	target <  array[middle] ? high = (middle - 1) : low = (middle + 1)
-	target == array[middle] ? (return middle) : rec_bin_search(target,array,low,high)
+  return -1 if low > high
+  target <  array[middle] ? high = (middle - 1) : low = (middle + 1)
+  target == array[middle] ? (return middle) : rec_bin_search(target,array,low,high)
 end
 
 # p "Recursive Binary Search 2:"
