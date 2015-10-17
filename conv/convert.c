@@ -2,9 +2,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>
-
 #include "csv.h"
-/* Basic CSV Parsing - WIP - Number of columns is hardcoded */
+/* Basic CSV Parsing - WIP */
 
 enum { NOMEM = -2 };          /* out of memory signal */
 
@@ -14,12 +13,12 @@ static int  maxline  = 0;     /* size of line[] and sline[] */
 static char **field  = NULL;  /* field pointers */
 static int  maxfield = 0;     /* size of field[] */
 static int  nfield   = 0;     /* number of fields in field[] */
-static char *h_ary[7];  			/* the header */
-static int h_counter = 0;
-
+static int  h_count  = 0;     /* counter to check if header */
+static char **h_ary  = NULL;	/* the header */
 static char fieldsep[] = ","; /* field separator chars */
 static char *advquoted(char *);
 static int split(void);
+
 static int endofline(FILE *fin, int c) /* endofline: check for and consume \r, \n, \r\n, or EOF */
 {
 	int eol;
@@ -47,9 +46,9 @@ static void reset(void) /* reset: set variables back to starting values */
 /* csvgetline:  get one line, grow as needed */
 char *csvgetline(FILE *fin)
 {	
-	int i, c;
+	int i, c, a;
 	char *newl, *news;
-	
+
 	if (line == NULL) {			/* allocate on first call */
 		maxline = maxfield = 1;
 		line = (char *) malloc(maxline);
@@ -60,6 +59,7 @@ char *csvgetline(FILE *fin)
 			return NULL;		/* out of memory */
 		}
 	}
+
 	for (i = 0; (c = getc(fin)) != EOF && !endofline(fin,c); i++) {
 		if (i >= maxline - 1) {	/* grow line */
 			maxline *= 2;		      /* double current size */
@@ -68,21 +68,32 @@ char *csvgetline(FILE *fin)
 				reset();
 				return NULL;
 			}
+
 			line = newl;
 			news = (char *) realloc(sline, maxline);
+
 			if (news == NULL) {
 				reset();
 				return NULL;
 			}
+
 			sline = news;
 		}
+
 		line[i] = c;
 	}
+
 	line[i] = '\0';
 	if (split() == NOMEM) {
 		reset();
 		return NULL;			/* out of memory */
 	}
+
+	// If first line of csv, 
+	if (h_count == 0) {
+		h_ary = (char **) malloc(csvnfield());
+	}
+
 	return (c == EOF && i == 0) ? NULL : line;
 }
 
@@ -94,8 +105,7 @@ static int split(void)
 	int sepc;   /* temporary separator character */
 
 	nfield = 0;
-	if (line[0] == '\0')
-		return 0;
+	if (line[0] == '\0') return 0;
 	strcpy(sline, line);
 	p = sline;
 
@@ -104,14 +114,17 @@ static int split(void)
 			maxfield *= 2;			/* double current size */
 			newf = (char **) realloc(field, 
 						maxfield * sizeof(field[0]));
-			if (newf == NULL)
-				return NOMEM;
+
+			if (newf == NULL) return NOMEM;
 			field = newf;
 		}
-		if (*p == '"')
+
+		if (*p == '"') {
 			sepp = advquoted(++p);	/* skip initial quote */
-		else
+		} else {
 			sepp = p + strcspn(p, fieldsep);
+		}
+
 		sepc = sepp[0];
 		sepp[0] = '\0';				/* terminate field */
 		field[nfield++] = p;
@@ -135,6 +148,7 @@ static char *advquoted(char *p)
 			j += k;
 			break;
 		}
+
 		p[i] = p[j];
 	}
 
@@ -142,19 +156,19 @@ static char *advquoted(char *p)
 	return p + j;
 }
 
+// Printing in JSON format to console
 void Json_print(int x)
 {
 	int y;
-	int s_a = sizeof(h_ary)/sizeof(char*);
-	// Printing in JSON format to console
+
 	if (x != 1) printf("\n  },  \n");
 	printf("  Row %d: {", x);
 
-	for (y = 0; y < s_a-2; y++) {
+	for (y = 0; y < nfield-2; y++) {
 		printf("\n    %s: %s,", h_ary[y], csvfield(y));
 	}
 
-	printf("\n    %s: %s", h_ary[s_a-1], csvfield(s_a-1));
+	printf("\n    %s: %s", h_ary[nfield-1], csvfield(nfield-1));
 }
 
 /* csvfield:  return pointer to n-th field */
@@ -163,7 +177,7 @@ char *csvfield(int n)
 	if (n < 0 || n >= nfield) return NULL;
 	
 	// Assigning h_ary, the header array, if this is the first iteration
-	if (h_counter == 0) h_ary[n] = strdup(field[n]);
+	if (h_count == 0) h_ary[n] = strdup(field[n]);
 
 	return field[n];
 }
@@ -191,11 +205,10 @@ int main(void)
 			Json_print(x);
 		}
 
-		if (x == 0) h_counter = 1;
-
+		if (x == 0) h_count = 1;
 		x++;
 	}
-		
+	
 	printf("\n  }  \n}\n");
 	return 0;
 }
