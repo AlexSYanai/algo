@@ -27,16 +27,16 @@ class BackPacker
   def initialize(items,max_weight)
     @items          = items
     @max_weight     = max_weight
-    @utility_matrix = Array.new(items.length) { Array.new(max_weight+1) {0} }
+    @utility_matrix = Array.new(items.length) { Array.new(max_weight + 1) { 0 } }
   end
 
-  def get_items(*new_items) # Generates list for initialized items or add new items
+  def get_items(*new_items)       # Generates list for initialized items or add new items
     new_items = @items if new_items.empty?
     new_items.length == 1 ? ItemFactory.add_single_item(new_items) : ItemFactory.create_list(new_items)
     @item_list = ItemFactory.list
   end
 
-  def get_knapsack_vals # Methods that actually calculate the relative utilities of each item
+  def get_knapsack_vals           # Methods that actually calculate the relative utilities of each item
     compare_item_utility
     find_selected_items
   end
