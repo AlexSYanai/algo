@@ -62,7 +62,6 @@ defmodule Evolution do
   def mutation(p,r,chars) do
     (0..length(p)-1) 
       |> Stream.map(fn n -> Enum.at(p,n) end)
-      # |> Stream.with_index
       |> Enum.map(fn n -> if Rand.num <= r, do: Rand.char(chars), else: n end)
   end
 
@@ -70,4 +69,4 @@ defmodule Evolution do
   def mu_rate(n), do: 1   - :math.exp(-(100-n)/400)
 end
 
-Evolution.select("METHINKS IT IS LIKE A WEASEL")
+Evolution.select("THIS IS A TEST PHRASE")

@@ -1,3 +1,4 @@
+# For illustration purposes - copied from Dave Thomas' Programming Elixir
 defmodule FibAgent do 
   def start_link do
     cache = Enum.into([{0, 0}, {1, 1}], HashDict.new)

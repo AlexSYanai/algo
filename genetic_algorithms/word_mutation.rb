@@ -5,7 +5,7 @@ module Selection
     end
 
     def mutate(parent,rate,chars)
-      parent.each_char.collect { |char| rand <= rate ? random_char(chars) : char }.join
+      parent.each_char.map { |char| rand <= rate ? random_char(chars) : char }.join
     end
 
     def mutation_rate(candidate,target)

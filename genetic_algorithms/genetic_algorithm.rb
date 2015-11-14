@@ -106,7 +106,7 @@ class Population
   def select   # Return the selected chromosome from a given population (called twice)
     total = 0
     random_selection = rand(w_total) # Randomly select a value within pop's total fitness
-    chromosomes.each_with_index do |xsome, index| # For each xsome in the population
+    chromosomes.each_with_index do |xsome, index|  # For each xsome in the population
       total += xsome.w                             # Keep a running total of the fitness of each
       (return xsome) if total > random_selection || index == (chromosomes.length - 1)
     end # Return an xsome if the total is above the fitness value or it is the last xsome in the population
@@ -130,7 +130,7 @@ class Selection
 
       while offspring.count < prev_gen.count # Creates the new generation
         parent_1, parent_2 = select_chromosomes
-        child_1, child_2 = analyze_crossover(parent_1,parent_2)
+        child_1,  child_2  = analyze_crossover(parent_1,parent_2)
         mutate_chromosomes(child_1,child_2)
         add_offspring(offspring,child_1,child_2)
       end
