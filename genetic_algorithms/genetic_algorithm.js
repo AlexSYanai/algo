@@ -25,20 +25,21 @@ function Chromosome(natEnviro, genes) {
   this.count  = 0;
   this.genes  = "";
 
-  if(genes != undefined) { this.genes = genes }
+  if (genes != undefined) { this.genes = genes }
 }
 
 Chromosome.prototype = {
   constructor: Chromosome,
   setGenes: function() {
-    for(var l = 0; l < this.enviro.getNumBits(); l++) {
+    for (var i = 0; i < this.enviro.getNumBits(); i++) {
       this.genes += Math.floor(Math.random() + 0.5).toString();
     }
   },
 
   mutate: function() {
     var tempGene = ""
-    for(i = 0; i < this.genes.length; i++) {
+
+    for ( var i = 0; i < this.genes.length; i++) {
       if (this.genes[i] === "0") {
         tempGene += "0";
       } else {
@@ -49,6 +50,7 @@ Chromosome.prototype = {
         }
       }
     }
+
     this.genes = tempGene;
   },
 
@@ -68,17 +70,18 @@ function Nucleus(natEnviro, genome1, genome2) {
 Nucleus.prototype = {
   constructor: Nucleus,
   setXoverRegions: function(locus) {
-    var locus = Math.ceil(Math.random() * (this.genome1.genes.length))
+    var locus = Math.ceil(Math.random() * (this.genome1.count()))
     
     var half1 = this.genome1.genes.substring(0,locus);
-    var half2 = this.genome2.genes.substring(locus,this.genome2.genes.length);
+    var half2 = this.genome2.genes.substring(locus,this.genome2.count());
 
     return (half1 + half2);
   },
 
   recombine: function() {
-    xover1 = this.setXoverRegions();
-    xover2 = this.setXoverRegions();
+    var xover1  = this.setXoverRegions();
+    var xover2  = this.setXoverRegions();
+
     this.child1 = new Chromosome(this.enviro, xover1);
     this.child2 = new Chromosome(this.enviro, xover2);
 
@@ -105,8 +108,8 @@ Population.prototype = {
 
   populate: function(natEnviro) {
     var xsomes1 = [];
-    var k = 0;
-    for(k = 0; k < natEnviro.getPop(); k++) {
+
+    for (var i = 0; i < natEnviro.getPop(); i++) {
       tempXsome = new Chromosome(natEnviro);
       tempXsome.setGenes();
       xsomes1.push(tempXsome);
@@ -118,7 +121,7 @@ Population.prototype = {
   getGenes: function(natEnviro) {
     var genes = [];
 
-    for(i = 0; i < this.xsomes.length; i++) {
+    for (var i = 0; i < this.xsomes.length; i++) {
       genes.push(this.xsomes[i].genes);
     }
 
@@ -129,10 +132,10 @@ Population.prototype = {
     var tempTotal  = 0;
     var tempMax    = 0;
 
-    for(var j = 0; j < this.xsomes.length; j++) {
-      tempTotal += this.xsomes[j].w();
-      if (this.xsomes[j].w() > tempMax) {
-        tempMax = this.xsomes[j].w();
+    for (var i = 0; i < this.xsomes.length; i++) {
+      tempTotal += this.xsomes[i].w();
+      if (this.xsomes[i].w() > tempMax) {
+        tempMax = this.xsomes[i].w();
       }
     }
 
@@ -141,25 +144,23 @@ Population.prototype = {
     this.wAvrg  = tempTotal/this.xsomes.length;
   },
 
-  getXsomes: function() { return this.xsomes },
-  setXsomes: function(newXsomes) { 
-    this.xsomes = newXsomes; 
-  },
-
-  count: function() {
-    return this.xsomes.length;
-  },
-  
   selecti: function() {
-    var total      = 0;
+    var wTotal     = 0;
     var randSelect = Math.ceil(Math.random() * (this.wTotal));
-    for(i = 0; i < this.xsomes.length; i++) {
-      total += this.xsomes[i].w();
-      if(total > randSelect || i == this.xsomes.length - 1) {
+
+    for (var i = 0; i < this.xsomes.length; i++) {
+      wTotal += this.xsomes[i].w();
+      if (wTotal > randSelect || i == this.xsomes.length - 1) {
         this.xsomes = this.xsomes[i];
         return;
       }
     }
+  },
+
+  count:     function() { return this.xsomes.length; },
+  getXsomes: function() { return this.xsomes },
+  setXsomes: function(newXsomes) { 
+    this.xsomes = newXsomes; 
   }
 }
 
@@ -167,8 +168,9 @@ Population.prototype = {
 var selection = function() {
   function analyze_crossover(fn1,fn2,natEnviro) {
     if (Math.random() <= natEnviro.getXoverRate()) {
-      var nuc = new Nucleus(natEnviro,fn1,fn2);
-      var children = nuc.recombine;
+      var nucleus  = new Nucleus(natEnviro,fn1,fn2);
+      var children = nucleus.recombine;
+      
       return children;
     } else {
       return [fn1, fn2];
@@ -176,7 +178,7 @@ var selection = function() {
   }
 
   function addOffspring(offspring,children,natEnviro) {
-    if(natEnviro.getPop() % 2 === 0) {
+    if (natEnviro.getPop() % 2 === 0) {
       offspring.setXsomes(children);
     } else {
       offspring.setXsomes(children.genes[Math.floor(Math.random() * children.genes.length)]);
@@ -185,11 +187,11 @@ var selection = function() {
 
   function logFinal(prevGen,environment) {
     console.log("\n");
-    for (var g = 0; g < prevGen.genes.length; g++) {
-      if (g < 9) {
-        console.log("N" + (g + 1) + ":  " + prevGen.genes[g]);
+    for (var i = 0; i < prevGen.count(); i++) {
+      if (i < 9) {
+        console.log("N" + (i + 1) + ":  " + prevGen.genes[i]);
       } else {
-        console.log("N" + (g + 1) + ": "  + prevGen.genes[g]);
+        console.log("N" + (i + 1) + ": "  + prevGen.genes[i]);
       }
     }
 
@@ -202,13 +204,13 @@ var selection = function() {
     var prevGen = prevGen;
     prevGen.setGen(natEnviro);
     
-    for(var i = 0; i < natEnviro.getGens(); i++) {
+    for (var i = 0; i < natEnviro.getGens(); i++) {
       var offspring = new Population;
       offspring.setGen(natEnviro);
 
-      while(offspring.getXsomes().length < prevGen.getXsomes().length) {
-        var parent1 = prevGen.selecti();
-        var parent2 = prevGen.selecti();
+      while (offspring.count() < prevGen.count()) {
+        var parent1  = prevGen.selecti();
+        var parent2  = prevGen.selecti();
         var children = analyze_crossover(parent1, parent2, natEnviro);
         var child1   = children[0];
         var child2   = children[1];
