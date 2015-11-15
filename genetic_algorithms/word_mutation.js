@@ -62,7 +62,7 @@ var WordMutation = function() {
     return mostFit;
   }
 
-  function compareGens(firstGen,target,genCount,rates) {
+  function logGens(firstGen,target,genCount,rates) {
     if (firstGen !== target) {
       console.log(genCount + " " + last(rates) + " " + w(target,firstGen) + " " + firstGen);  
     } else {
@@ -113,7 +113,7 @@ var WordMutation = function() {
         genCount++;
       }
 
-      compareGens(firstGen,target,genCount,rates);
+      logGens(firstGen,target,genCount,rates);
     }
   }
 }();
