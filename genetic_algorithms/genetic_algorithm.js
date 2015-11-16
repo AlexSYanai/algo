@@ -56,7 +56,7 @@ Chromosome.prototype = {
 
   w: function() {
     return this.genes.match((/1/g) || []).length;
-  },
+  }
 }
 
 function Nucleus(natEnviro, genome1, genome2) {
@@ -144,7 +144,7 @@ Population.prototype = {
     this.wAvrg  = tempTotal/this.xsomes.length;
   },
 
-  selecti: function() {
+  selectBest: function() {
     var wTotal     = 0;
     var randSelect = Math.ceil(Math.random() * (this.wTotal));
 
@@ -163,7 +163,6 @@ Population.prototype = {
     this.xsomes = newXsomes; 
   }
 }
-
 
 var selection = function() {
   function analyze_crossover(fn1,fn2,natEnviro) {
@@ -185,8 +184,9 @@ var selection = function() {
     }
   }
 
-  function logFinal(prevGen,environment) {
+  function logFinal(firstGen,prevGen,environment) {
     console.log("\n");
+
     for (var i = 0; i < prevGen.count(); i++) {
       if (i < 9) {
         console.log("N" + (i + 1) + ":  " + prevGen.genes[i]);
@@ -195,13 +195,21 @@ var selection = function() {
       }
     }
 
-    console.log(  "Generation:  " + environment.gens + " \n" 
-                + "Avg Fitness: " + prevGen.wAvrg    + " \n" 
-                + "Max Fitness: " + prevGen.wMax);
+    console.log(
+                "********************* "           + "\n" +
+                "Generation:  " + 1                + "\n" +
+                "Avg Fitness: " + firstGen.wAvrg   + "\n" +
+                "Max Fitness: " + firstGen.wMax    + "\n" +
+                "********************* "           + "\n" +
+                "Generation:  " + environment.gens + "\n" +
+                "Avg Fitness: " + prevGen.wAvrg    + "\n" +
+                "Max Fitness: " + prevGen.wMax     + "\n" +
+                "********************* "); 
   }
 
   function runGenerations(natEnviro, prevGen) {
-    var prevGen = prevGen;
+    var firstGen = prevGen;
+    var prevGen  = prevGen;
     prevGen.setGen(natEnviro);
     
     for (var i = 0; i < natEnviro.getGens(); i++) {
@@ -209,8 +217,8 @@ var selection = function() {
       offspring.setGen(natEnviro);
 
       while (offspring.count() < prevGen.count()) {
-        var parent1  = prevGen.selecti();
-        var parent2  = prevGen.selecti();
+        var parent1  = prevGen.selectBest();
+        var parent2  = prevGen.selectBest();
         var children = analyze_crossover(parent1, parent2, natEnviro);
         var child1   = children[0];
         var child2   = children[1];
@@ -225,7 +233,7 @@ var selection = function() {
       prevGen = offspring;
     }
 
-    logFinal(prevGen,environment);
+    logFinal(firstGen,prevGen,environment);
   }
 
   return {

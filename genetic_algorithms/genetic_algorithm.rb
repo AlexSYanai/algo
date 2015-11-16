@@ -125,6 +125,8 @@ class Selection
   end
 
   def run_generations # Run the test conditions num_gens times
+    @first_gen = prev_gen
+
     NaturalEnvironment.num_gens.times do |generation|
       offspring = Population.new # Initialize the new offspring population
 
@@ -162,15 +164,19 @@ class Selection
   end
 
   def display_stats
-    puts ["Generation #{NaturalEnvironment.num_gens}", "Avgerage Fitness: #{prev_gen.w_average.round(2)}", "Max Fitness: #{prev_gen.w_max}"]
+    puts ("*"*22)
+    puts "Generation:       1\nAvgerage Fitness: #{@first_gen.w_average.round(2)}\nMax Fitness:      #{@first_gen.w_max}"
+    puts ("*"*22)
+    puts "Generation:       #{NaturalEnvironment.num_gens}\nAvgerage Fitness: #{@prev_gen.w_average.round(2)}\nMax Fitness:      #{@prev_gen.w_max}"
   end
 
   def display_final_xsomes # Formats and displays final xsome bit-strings
+    puts ("*"*22) + "\n"
     prev_gen.inspect_chromosome.each_with_index { |xsome,i| (i+1) < 10 ? (puts "N#{i+1}:  #{xsome}") : (puts "N#{i+1}: #{xsome}") }
   end
 end
 
-drosophila = Selection.new({n: 32, l: 64, gen: 1000, pc: 0.8, u: 0.004})
+drosophila = Selection.new({n: 32, l: 64, gen: 1000, pc: 8, u: 0.004})
 drosophila.new_generation_zero
 drosophila.run_generations
 drosophila.display_stats
