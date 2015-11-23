@@ -103,12 +103,12 @@ class Population
     w_total.fdiv(chromosomes.length)
   end
 
-  def select   # Return the selected chromosome from a given population (called twice)
+  def select                         # Return the selected chromosome from a given population (called twice)
     total = 0
     random_selection = rand(w_total) # Randomly select a value within pop's total fitness
-    chromosomes.each_with_index do |xsome, index|  # For each xsome in the population
-      total += xsome.w                             # Keep a running total of the fitness of each
-      (return xsome) if total > random_selection || index == (chromosomes.length - 1)
+    chromosomes.each do |xsome|      # For each xsome in the population
+      total += xsome.w               # Keep a running total of the fitness of each
+      (return xsome) if total > random_selection
     end # Return an xsome if the total is above the fitness value or it is the last xsome in the population
   end
 end
@@ -176,7 +176,7 @@ class Selection
   end
 end
 
-drosophila = Selection.new({n: 32, l: 64, gen: 1000, pc: 8, u: 0.004})
+drosophila = Selection.new({n: 32, l: 64, gen: 1000, pc: 0.8, u: 0.004})
 drosophila.new_generation_zero
 drosophila.run_generations
 drosophila.display_stats

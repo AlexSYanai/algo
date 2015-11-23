@@ -25,7 +25,7 @@ function Chromosome(natEnviro, genes) {
   this.count  = 0;
   this.genes  = "";
 
-  if (genes != undefined) { this.genes = genes }
+  if (genes !== undefined) { this.genes = genes }
 }
 
 Chromosome.prototype = {
@@ -37,7 +37,7 @@ Chromosome.prototype = {
   },
 
   mutate: function() {
-    var tempGene = ""
+    var tempGene = "";
 
     for ( var i = 0; i < this.genes.length; i++) {
       if (this.genes[i] === "0") {
@@ -57,7 +57,7 @@ Chromosome.prototype = {
   w: function() {
     return this.genes.match((/1/g) || []).length;
   }
-}
+};
 
 function Nucleus(natEnviro, genome1, genome2) {
   this.enviro  = natEnviro;
@@ -69,8 +69,8 @@ function Nucleus(natEnviro, genome1, genome2) {
 
 Nucleus.prototype = {
   constructor: Nucleus,
-  setXoverRegions: function(locus) {
-    var locus = Math.ceil(Math.random() * (this.genome1.count()))
+  setXoverRegions: function() {
+    var locus = Math.ceil(Math.random() * (this.genome1.count()));
     
     var half1 = this.genome1.genes.substring(0,locus);
     var half2 = this.genome2.genes.substring(locus,this.genome2.count());
@@ -87,7 +87,7 @@ Nucleus.prototype = {
 
     return [this.child1, this.child2];
   }
-}
+};
 
 function Population() {
   this.xsomes = [];
@@ -204,7 +204,7 @@ var selection = function() {
                 "Generation:  " + environment.gens + "\n" +
                 "Avg Fitness: " + prevGen.wAvrg    + "\n" +
                 "Max Fitness: " + prevGen.wMax     + "\n" +
-                "********************* "); 
+                "********************* ");
   }
 
   function runGenerations(natEnviro, prevGen) {
