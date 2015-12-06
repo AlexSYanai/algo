@@ -1,7 +1,5 @@
 # My Ruby implementation of a basic genetic algorithm
-# Based upon:
-# Introduction to Genetic Algorithms Chapter 1
-# Author: Melanie Mitchell
+# Based upon: Introduction to Genetic Algorithms Chapter 1, (Melanie Mitchell)
 module NaturalEnvironment
   class << self
     def encapsulate_conditions(args)
