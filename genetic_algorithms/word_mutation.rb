@@ -13,7 +13,7 @@ module Selection
     end
 
     def w(candidate,target) # Calculates fitness using the P0 = e^-x Poisson relationship
-      Math.exp(candidate.chars.zip(target.chars).inject(0) { |a,b| a + (b[0].ord - b[1].ord).abs }.fdiv(-10))*100
+      Math.exp(candidate.chars.zip(target.chars).inject(0) { |a,b| a + (b[0].ord - b[1].ord).abs }.fdiv(-10)) * 100
     end
 
     def avg_mutation_rate(rates)
@@ -37,6 +37,7 @@ end
 class WordMutation
   attr_accessor :first_gen,:last_gen,:gen_count,:rates
   attr_reader   :target,:num_copies,:search_chars
+  
   def initialize(target,copies=100)
     @target       = target
     @num_copies   = copies
