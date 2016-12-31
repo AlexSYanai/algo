@@ -8,6 +8,7 @@ def bin_search(target,array)
     mid = (high + low) / 2
     array[mid] > target ? high = mid - 1 : (array[mid] < target ? low = mid + 1 : (return mid))
   end
+  
   -1
 end
 
