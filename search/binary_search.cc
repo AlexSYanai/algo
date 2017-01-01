@@ -4,7 +4,7 @@
 int binarySearch(int target, std::vector<int> ary, int low, int high) {
   int middle = (high + low)/2;
 
-  if (low > high) return -1;
+  if (low > high || ary.empty()) return -1;
 
   (target < ary[middle]) ? high = middle - 1 : low = middle + 1;
 
@@ -18,6 +18,7 @@ int binarySearch(int target, std::vector<int> ary, int low, int high) {
 void binarySearchTest() {
   bool found;
   std::vector<int> ary = { 1, 2, 4, 7, 9, 11, 13, 14, 15, 17, 19, 22, 24, 27, 30 };
+  std::vector<int> empty = {};
 
   std::cout << std::boolalpha;
 
@@ -32,12 +33,16 @@ void binarySearchTest() {
 
   found = binarySearch(99,ary,0,ary.size()) == -1;
   std::cout << found << std::endl;
+
+  found = binarySearch(99,empty,0,ary.size()) == -1;
+  std::cout << found << std::endl;
 }
 
 int main() {
   std::vector<int> ary = { 1, 2, 4, 7, 9, 11, 13, 14, 15, 17, 19, 22, 24, 27, 30 };
+  std::vector<int> ary1 = {};
 
-  int bin = binarySearch(30,ary,0,ary.size());
+  int bin = binarySearch(30,ary1,0,ary.size());
   std::cout << bin << std::endl;
   
   binarySearchTest();  
