@@ -1,14 +1,7 @@
 #include <vector>
 #include <iostream>
 
-void printVec(const std::vector<int> &vec)
-{
-  for (const auto &element : vec) {
-    std::cout << element << ' ';
-  }
-
-  std::cout << std::endl;
-}
+#include "print_vec.h"
 
 std::vector<int> insertionSort(std::vector<int> &ary, const int len) {
   for (int i = 1; i < len; i++) {
